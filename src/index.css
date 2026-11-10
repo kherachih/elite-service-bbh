@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-page: #08090d;
+    --bg-card: rgba(16, 18, 26, 0.75);
+    --bg-raised: #1c202e;
+    --border-hairline: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(229, 169, 60, 0.4);
+    --text-primary: #f8f9fa;
+    --text-secondary: #a0a6b5;
+    --text-muted: #6b7280;
+    --accent-gold: #e5a93c;
+    --accent-cyan: #06b6d4;
+    --accent-emerald: #10b981;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+  }
+
+  /* Custom Clean Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #08090d;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e2230;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e5a93c;
+  }
+}
+
+/* Typography styles */
+.font-display {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.font-sans {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-mono-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+/* Liquid Glass with Specular Highlight */
+.liquid-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.liquid-glass-hover:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-color: rgba(229, 169, 60, 0.35);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 25px rgba(229, 169, 60, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* 3D Perspective container */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+/* Kinetic Gradient Glow */
+.kinetic-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(229, 169, 60, 0.12) 0%, transparent 60%);
+}
+
+/* Infinite Marquee */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

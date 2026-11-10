@@ -1,0 +1,24 @@
+import{O as N,j as v,P as F,Q as T,T as U,U as D,V as K,f as I}from"./index-DY-U_CNj.js";import{r as o}from"./react-vendor-CoM_mz1y.js";import{a1 as _}from"./motion-BnOxZQ5M.js";function z(e,i){if(typeof e=="function")return e(i);e!=null&&(e.current=i)}function V(...e){return i=>{let t=!1;const r=e.map(u=>{const c=z(u,i);return!t&&typeof c=="function"&&(t=!0),c});if(t)return()=>{for(let u=0;u<r.length;u++){const c=r[u];typeof c=="function"?c():z(e[u],null)}}}}function W(...e){return o.useCallback(V(...e),e)}class X extends o.Component{getSnapshotBeforeUpdate(i){const t=this.props.childRef.current;if(_(t)&&i.isPresent&&!this.props.isPresent&&this.props.pop!==!1){const r=t.offsetParent,u=_(r)&&r.offsetWidth||0,c=_(r)&&r.offsetHeight||0,a=getComputedStyle(t),n=this.props.sizeRef.current;n.height=parseFloat(a.height),n.width=parseFloat(a.width),n.top=t.offsetTop,n.left=t.offsetLeft,n.right=u-n.width-n.left,n.bottom=c-n.height-n.top,n.direction=a.direction}return null}componentDidUpdate(){}render(){return this.props.children}}function q({children:e,isPresent:i,anchorX:t,anchorY:r,root:u,pop:c}){var f;const a=o.useId(),n=o.useRef(null),R=o.useRef({width:0,height:0,top:0,left:0,right:0,bottom:0,direction:"ltr"}),{nonce:w}=o.useContext(N),p=((f=e.props)==null?void 0:f.ref)??(e==null?void 0:e.ref),y=W(n,p);return o.useInsertionEffect(()=>{const{width:d,height:h,top:x,left:g,right:E,bottom:M,direction:j}=R.current;if(i||c===!1||!n.current||!d||!h)return;const m=j==="rtl",b=t==="left"?m?`right: ${E}`:`left: ${g}`:m?`left: ${g}`:`right: ${E}`,P=r==="bottom"?`bottom: ${M}`:`top: ${x}`;n.current.dataset.motionPopId=a;const C=document.createElement("style");w&&(C.nonce=w);const l=u??document.head;return l.appendChild(C),C.sheet&&C.sheet.insertRule(`
+          [data-motion-pop-id="${a}"] {
+            position: absolute !important;
+            width: ${d}px !important;
+            height: ${h}px !important;
+            ${b}px !important;
+            ${P}px !important;
+          }
+        `),()=>{var s;(s=n.current)==null||s.removeAttribute("data-motion-pop-id"),l.contains(C)&&l.removeChild(C)}},[i]),v.jsx(X,{isPresent:i,childRef:n,sizeRef:R,pop:c,children:c===!1?e:o.cloneElement(e,{ref:y})})}const B=({children:e,initial:i,isPresent:t,onExitComplete:r,custom:u,presenceAffectsLayout:c,mode:a,anchorX:n,anchorY:R,root:w})=>{const p=F(G),y=o.useId();let f=!0,d=o.useMemo(()=>(f=!1,{id:y,initial:i,isPresent:t,custom:u,onExitComplete:h=>{p.set(h,!0);for(const x of p.values())if(!x)return;r&&r()},register:h=>(p.set(h,!1),()=>p.delete(h))}),[t,p,r]);return c&&f&&(d={...d}),o.useMemo(()=>{p.forEach((h,x)=>p.set(x,!1))},[t]),o.useEffect(()=>{!t&&!p.size&&r&&r()},[t]),e=v.jsx(q,{pop:a==="popLayout",isPresent:t,anchorX:n,anchorY:R,root:w,children:e}),v.jsx(T.Provider,{value:d,children:e})};function G(){return new Map}const k=e=>e.key||"";function A(e){const i=[];return o.Children.forEach(e,t=>{o.isValidElement(t)&&i.push(t)}),i}const te=({children:e,custom:i,initial:t=!0,onExitComplete:r,presenceAffectsLayout:u=!0,mode:c="sync",propagate:a=!1,anchorX:n="left",anchorY:R="top",root:w})=>{const[p,y]=U(a),f=o.useMemo(()=>A(e),[e]),d=a&&!p?[]:f.map(k),h=o.useRef(!0),x=o.useRef(f),g=F(()=>new Map),E=o.useRef(new Set),[M,j]=o.useState(f),[m,b]=o.useState(f);D(()=>{h.current=!1,x.current=f;for(let l=0;l<m.length;l++){const s=k(m[l]);d.includes(s)?(g.delete(s),E.current.delete(s)):g.get(s)!==!0&&g.set(s,!1)}},[m,d.length,d.join("-")]);const P=[];if(f!==M){let l=[...f];for(let s=0;s<m.length;s++){const $=m[s],L=k($);d.includes(L)||(l.splice(s,0,$),P.push($))}return c==="wait"&&P.length&&(l=P),b(A(l)),j(f),null}const{forceRender:C}=o.useContext(K);return v.jsx(v.Fragment,{children:m.map(l=>{const s=k(l),$=a&&!p?!1:f===m||d.includes(s),L=()=>{if(E.current.has(s))return;if(g.has(s))E.current.add(s),g.set(s,!0);else return;let S=!0;g.forEach(H=>{H||(S=!1)}),S&&(C==null||C(),b(x.current),a&&(y==null||y()),r&&r())};return v.jsx(B,{isPresent:$,initial:!h.current||t?void 0:!1,custom:i,presenceAffectsLayout:u,mode:c,root:w,onExitComplete:$?void 0:L,anchorX:n,anchorY:R,children:l},s)})})};/**
+ * @license lucide-react v0.546.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const O=[["path",{d:"m15 18-6-6 6-6",key:"1wnfg3"}]],ne=I("chevron-left",O);/**
+ * @license lucide-react v0.546.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const Q=[["path",{d:"m9 18 6-6-6-6",key:"mthhwq"}]],oe=I("chevron-right",Q);/**
+ * @license lucide-react v0.546.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const Y=[["path",{d:"M18 6 6 18",key:"1bl5f8"}],["path",{d:"m6 6 12 12",key:"d8bk6v"}]],se=I("x",Y);export{te as A,ne as C,se as X,oe as a};
