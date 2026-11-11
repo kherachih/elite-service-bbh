@@ -5,22 +5,22 @@
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
   </defs>
-  <!-- Highlight Area -->
-  <circle cx="240" cy="190" r="75" fill="rgba(56, 189, 248, 0.18)" filter="url(#glow-ca)" />
-  <!-- Beacon Ripple -->
+  <!-- Highlight Area on Canada Territory -->
+  <ellipse cx="255" cy="250" rx="75" ry="48" fill="rgba(56, 189, 248, 0.18)" filter="url(#glow-ca)" />
+  <!-- Beacon Ripple at Montreal / Southern Canada -->
   <g>
-    <circle cx="265" cy="225" r="10" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8">
-      <animate attributeName="r" from="6" to="36" dur="2.2s" repeatCount="indefinite" />
+    <circle cx="282" cy="298" r="8" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8">
+      <animate attributeName="r" from="4" to="26" dur="2.2s" repeatCount="indefinite" />
       <animate attributeName="opacity" from="0.9" to="0" dur="2.2s" repeatCount="indefinite" />
     </circle>
-    <circle cx="265" cy="225" r="14" fill="rgba(56, 189, 248, 0.25)" />
-    <circle cx="265" cy="225" r="6" fill="#38bdf8" />
-    <circle cx="265" cy="225" r="2.5" fill="#ffffff" />
+    <circle cx="282" cy="298" r="11" fill="rgba(56, 189, 248, 0.25)" />
+    <circle cx="282" cy="298" r="5" fill="#38bdf8" />
+    <circle cx="282" cy="298" r="2" fill="#ffffff" />
   </g>
   <!-- Interactive Pin Card -->
-  <g transform="translate(180, 165)">
-    <rect width="180" height="34" rx="17" fill="rgba(10, 15, 29, 0.94)" stroke="#38bdf8" stroke-width="1.5" />
-    <circle cx="18" cy="17" r="4.5" fill="#22c55e" />
-    <text x="32" y="21" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" letter-spacing="0.5">🇨🇦 CANADIAN MUSCLE</text>
+  <g transform="translate(195, 254)">
+    <rect width="176" height="32" rx="16" fill="rgba(10, 15, 29, 0.94)" stroke="#38bdf8" stroke-width="1.5" />
+    <circle cx="16" cy="16" r="4.5" fill="#22c55e" />
+    <text x="30" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" letter-spacing="0.5">🇨🇦 CANADIAN MUSCLE</text>
   </g>
 </svg>

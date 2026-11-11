@@ -5,22 +5,22 @@
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
   </defs>
-  <!-- Highlight Area -->
-  <circle cx="730" cy="330" r="25" fill="rgba(168, 85, 247, 0.25)" filter="url(#glow-bd)" />
+  <!-- Highlight Area on Bangladesh Territory -->
+  <circle cx="735" cy="390" r="28" fill="rgba(168, 85, 247, 0.28)" filter="url(#glow-bd)" />
   <!-- Beacon Ripple at Dhaka -->
   <g>
-    <circle cx="730" cy="330" r="8" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8">
-      <animate attributeName="r" from="4" to="28" dur="2.2s" repeatCount="indefinite" />
+    <circle cx="735" cy="390" r="7" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8">
+      <animate attributeName="r" from="4" to="24" dur="2.2s" repeatCount="indefinite" />
       <animate attributeName="opacity" from="0.9" to="0" dur="2.2s" repeatCount="indefinite" />
     </circle>
-    <circle cx="730" cy="330" r="11" fill="rgba(168, 85, 247, 0.25)" />
-    <circle cx="730" cy="330" r="5" fill="#a855f7" />
-    <circle cx="730" cy="330" r="2" fill="#ffffff" />
+    <circle cx="735" cy="390" r="10" fill="rgba(168, 85, 247, 0.25)" />
+    <circle cx="735" cy="390" r="5" fill="#a855f7" />
+    <circle cx="735" cy="390" r="2" fill="#ffffff" />
   </g>
   <!-- Interactive Pin Card -->
-  <g transform="translate(650, 275)">
-    <rect width="165" height="34" rx="17" fill="rgba(18, 12, 28, 0.94)" stroke="#a855f7" stroke-width="1.5" />
-    <circle cx="18" cy="17" r="4.5" fill="#22c55e" />
-    <text x="32" y="21" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" letter-spacing="0.5">🇧🇩 CLOUD POS SYSTEM</text>
+  <g transform="translate(650, 346)">
+    <rect width="170" height="32" rx="16" fill="rgba(18, 12, 28, 0.94)" stroke="#a855f7" stroke-width="1.5" />
+    <circle cx="16" cy="16" r="4.5" fill="#22c55e" />
+    <text x="30" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" letter-spacing="0.5">🇧🇩 CLOUD POS SYSTEM</text>
   </g>
 </svg>
