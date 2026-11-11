@@ -1,21 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1010" height="666" viewBox="0 0 1010 666" fill="none">
-  <defs>
-    <filter id="glow-ca" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-  </defs>
-  <!-- Highlight Area on Canada Territory -->
-  <ellipse cx="255" cy="250" rx="75" ry="48" fill="rgba(56, 189, 248, 0.18)" filter="url(#glow-ca)" />
-  <!-- Beacon Ripple at Montreal / Southern Canada -->
+  <!-- Interactive Pin Point (Clean) -->
   <g>
-    <circle cx="282" cy="298" r="8" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8">
-      <animate attributeName="r" from="4" to="26" dur="2.2s" repeatCount="indefinite" />
-      <animate attributeName="opacity" from="0.9" to="0" dur="2.2s" repeatCount="indefinite" />
-    </circle>
-    <circle cx="282" cy="298" r="11" fill="rgba(56, 189, 248, 0.25)" />
-    <circle cx="282" cy="298" r="5" fill="#38bdf8" />
-    <circle cx="282" cy="298" r="2" fill="#ffffff" />
+    <circle cx="282" cy="298" r="6" fill="#38bdf8" />
+    <circle cx="282" cy="298" r="2.5" fill="#ffffff" />
   </g>
   <!-- Interactive Pin Card -->
   <g transform="translate(195, 254)">
