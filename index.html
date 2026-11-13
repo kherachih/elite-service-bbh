@@ -1000,6 +1000,36 @@ body:has([data-nav-status="active"]) .under-nav-bar {
 }
 
 </style>
+<style id="elite-modal-scroll-lock">
+
+/* ==================== ELITE ERP MODAL SCROLL CONTAINMENT ==================== */
+html.is--erp-modal-open,
+body.is--erp-modal-open {
+  overflow: hidden !important;
+  height: 100vh !important;
+  touch-action: none !important;
+}
+
+body.is--erp-modal-open main,
+body.is--erp-modal-open .main {
+  pointer-events: none !important;
+}
+
+#elite-erp-demo-modal {
+  touch-action: pan-y !important;
+  overscroll-behavior: contain !important;
+}
+
+#elite-erp-modal-box {
+  overscroll-behavior: contain !important;
+}
+
+.dossier-content {
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+</style>
 </head><body data-barba="wrapper" class="body"><div class="global"><div class="embed-css w-embed"><link href="https://slater.app/16596/45154.css" rel="stylesheet" type="text/css"> <!-- variables.css -->
 <link href="https://slater.app/16596/45446.css" rel="stylesheet" type="text/css"> <!-- marketing.css -->
 <link href="https://slater.app/16596/45511.css" rel="stylesheet" type="text/css"> <!-- components.css -->
@@ -2685,7 +2715,7 @@ window.goToTestimonialSlide = function(index) {
 <!-- END ELITE REELS MODAL -->
 
 <!-- ==================== DEDICATED ELITE ERP DEMO POPUP MODAL (UIVERSE EVIL-ROBIN-98 STYLE) ==================== -->
-<div id="elite-erp-demo-modal" style="display:none; position:fixed; inset:0; z-index:99998; background:rgba(3, 4, 7, 0.88); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); padding:1rem; box-sizing:border-box;">
+<div id="elite-erp-demo-modal" data-lenis-prevent="true" data-lenis-prevent="" style="display:none; position:fixed; inset:0; z-index:99998; background:rgba(3, 4, 7, 0.88); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); padding:1rem; box-sizing:border-box;">
 
   <style>
     @keyframes dossierIn {
@@ -2951,7 +2981,7 @@ window.goToTestimonialSlide = function(index) {
     }
   </style>
 
-  <div id="elite-erp-modal-box" class="dossier-container" onclick="event.stopPropagation();">
+  <div id="elite-erp-modal-box" class="dossier-container" data-lenis-prevent="true" data-lenis-prevent="" onclick="event.stopPropagation();">
     <!-- Close Button -->
     <button type="button" id="elite-erp-modal-close" class="dossier-close-btn" onclick="window.closeEliteErpDemoModal();" aria-label="Fermer la fenêtre">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2960,7 +2990,7 @@ window.goToTestimonialSlide = function(index) {
       </svg>
     </button>
 
-    <div class="dossier-content">
+    <div class="dossier-content" data-lenis-prevent="true" data-lenis-prevent="">
       <!-- Title Section (Signature evil-robin-98) -->
       <div class="dossier-title-section">
         <svg class="dossier-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -3109,6 +3139,9 @@ window.goToTestimonialSlide = function(index) {
 <script id="elite-unlock-scroll">
 (function() {
   function unlockPageScroll() {
+    if (document.body && document.body.classList.contains('is--erp-modal-open')) {
+      return; // Never unlock background while ERP demo modal is open
+    }
     // 1. Ensure Lenis is running and properly sized
     if (window.lenis) {
       try {
@@ -3479,11 +3512,21 @@ document.addEventListener('DOMContentLoaded', function() {
       try { v.pause(); } catch(err){}
     });
 
-    modal.style.display = 'flex';
+    // Lock page background scrolling
+    document.documentElement.classList.add('is--erp-modal-open');
+    document.body.classList.add('is--erp-modal-open');
     document.body.style.overflow = 'hidden';
-    if (window.lenis && typeof window.lenis.stop === 'function') {
-      try { window.lenis.stop(); } catch(err){}
+
+    // Stop Lenis smoothly and lock it
+    if (window.lenis) {
+      try {
+        if (typeof window.lenis.stop === 'function') window.lenis.stop();
+        window.lenis.__osmoPaused = true;
+        window.lenis.isStopped = true;
+      } catch(err){}
     }
+
+    modal.style.display = 'flex';
 
     // Smooth fade in
     setTimeout(() => {
@@ -3498,15 +3541,49 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.style.opacity = '0';
     setTimeout(() => {
       modal.style.display = 'none';
+
+      // Unlock page background scrolling
+      document.documentElement.classList.remove('is--erp-modal-open');
+      document.body.classList.remove('is--erp-modal-open');
       document.body.style.overflow = '';
-      if (window.lenis && typeof window.lenis.start === 'function') {
-        try { window.lenis.start(); } catch(err){}
+
+      // Resume Lenis
+      if (window.lenis) {
+        try {
+          window.lenis.__osmoPaused = false;
+          window.lenis.isStopped = false;
+          if (typeof window.lenis.start === 'function') window.lenis.start();
+          if (typeof window.lenis.resize === 'function') window.lenis.resize();
+        } catch(err){}
       }
-    }, 320);
+    }, 300);
   }
 
-  // Close on backdrop click
+  // Intercept all wheel events anywhere inside modal so background NEVER scrolls
+  // and scroll the .dossier-content directly with the wheel
   if (modal) {
+    modal.addEventListener('wheel', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const scroller = modal.querySelector('.dossier-content');
+      if (scroller) {
+        scroller.scrollTop += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Intercept touch events on mobile
+    modal.addEventListener('touchmove', function(e) {
+      const scroller = modal.querySelector('.dossier-content');
+      if (scroller && scroller.contains(e.target)) {
+        e.stopPropagation();
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, { passive: false });
+
+    // Close on backdrop click
     modal.addEventListener('click', function(e) {
       if (e.target === modal) {
         closeErpModal();
@@ -3545,7 +3622,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Button loading state
     btn.disabled = true;
     btn.style.opacity = '0.75';
-    btn.innerHTML = '<span>Enregistrement de votre démo...</span>';
+    btn.innerHTML = '<span>Enregistrement du Dossier...</span>';
 
     const ref = 'ERP-' + Math.floor(100000 + Math.random() * 900000);
     const leadData = {
@@ -3602,7 +3679,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // Transition views
       formWrapper.style.display = 'none';
       successWrapper.style.display = 'block';
-      box.scrollTop = 0;
+      const scroller = modal.querySelector('.dossier-content');
+      if (scroller) scroller.scrollTop = 0;
     }, 600);
   };
 
