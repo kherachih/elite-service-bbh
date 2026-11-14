@@ -877,21 +877,31 @@ section, .section, .home-hero, .intro, .product-slider, .made, .db, .footer, .un
 </script><style id="elite-undernav-fix">
 
 /* ==================== ELITE UNDER-NAV-BAR SLIM RIBBON ==================== */
+/* Initially hidden before site is rendered and hero entrance begins */
 .under-nav-bar {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: 50 !important; /* Strictly below .nav-bar (z-index: 100) */
+  display: flex !important;
+  transform: translateY(-0.8em) scale(0.97) !important;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.4s ease !important;
+}
+
+/* Revealed gracefully only when the page is fully ready */
+body.is--site-ready .under-nav-bar {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
-  z-index: 50 !important; /* Strictly below .nav-bar (z-index: 100) */
-  display: flex !important;
   transform: translateY(0) scale(1) !important;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
 }
 
 /* When scrolling starts or nav is active, tuck smoothly behind the navbar */
-body:has([data-scrolling-started="true"]) .under-nav-bar,
-body:has([data-nav-status="active"]) .under-nav-bar {
+body.is--site-ready:has([data-scrolling-started="true"]) .under-nav-bar,
+body.is--site-ready:has([data-nav-status="active"]) .under-nav-bar {
   transform: translateY(-2.2em) scale(0.96) !important;
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
 }
 
@@ -1150,6 +1160,139 @@ body.is--erp-modal-open .main {
 }
 
 </style>
+
+<style id="elite-mobile-responsive-enhancements">
+/* ==================== BUG FIX 2: HERO RADIAL MARQUEE ON MOBILE ==================== */
+/* Prevent images on mobile wheel from being chopped in half */
+@media (max-width: 768px) {
+  .home-hero__marquee-row {
+    aspect-ratio: auto !important;
+    height: clamp(230px, 48vw, 310px) !important;
+    min-height: 220px !important;
+    overflow: visible !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+  }
+
+  .radial-marquee__half-circle {
+    aspect-ratio: auto !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  .radial-marquee {
+    width: clamp(65em, 88vw, 95em) !important;
+    transform: translateY(-8%) !important;
+    pointer-events: none !important;
+  }
+  .radial-marquee * {
+    pointer-events: none !important;
+  }
+
+  .radial-marquee__card {
+    width: 100% !important;
+    overflow: visible !important;
+    border-radius: 10px !important;
+  }
+  .radial-marquee__card-inner {
+    border-radius: 10px !important;
+    padding: 0.35rem !important;
+    background: #0f111a !important;
+    border: 1px solid rgba(236, 72, 153, 0.25) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+  }
+  .radial-marquee__card-visual {
+    height: auto !important;
+    aspect-ratio: 16 / 10 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+  }
+  .radial-marquee__card-visual .resource-card__img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .radial-marquee__card-info {
+    padding: 0.45rem 0.6rem !important;
+  }
+  .radial-marquee__card-p {
+    font-size: 0.72rem !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+  }
+}
+
+/* ==================== BUG FIX 3: RESOURCE CARD TEXT OVERFLOW ==================== */
+/* Ensure descriptions like "Plateforme de cours en ligne..." wrap without clipping */
+.resource-card__category,
+.resource-card__category .eyebrow,
+.resource-card__category span,
+.res-used .eyebrow,
+.flick-card__info .eyebrow {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: block !important;
+  line-height: 1.45 !important;
+  max-width: 100% !important;
+  font-size: clamp(0.72rem, 2.3vw, 0.82rem) !important;
+  letter-spacing: 0.02em !important;
+}
+
+@media (max-width: 768px) {
+  .vertical-slider__item {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .resource-card {
+    padding: 0.85rem !important;
+    overflow: visible !important;
+  }
+  .resource-card__inner {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  .resource-card__start {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.5rem 0.2rem !important;
+  }
+  .resource-card__start-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 0.5rem !important;
+    gap: 0.4rem !important;
+  }
+  .resource-card__start-h h4 {
+    font-size: 1.35rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+  .resource-card .button-row {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+  }
+  .resource-card__end {
+    width: 100% !important;
+    max-width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+  .resource-card__end .resource-visual {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+</style>
+
 </head><body data-barba="wrapper" class="body"><div class="global"><div class="embed-css w-embed"><link href="https://slater.app/16596/45154.css" rel="stylesheet" type="text/css"> <!-- variables.css -->
 <link href="https://slater.app/16596/45446.css" rel="stylesheet" type="text/css"> <!-- marketing.css -->
 <link href="https://slater.app/16596/45511.css" rel="stylesheet" type="text/css"> <!-- components.css -->
@@ -4238,6 +4381,28 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', startAutoCycle);
   } else {
     startAutoCycle();
+  }
+})();
+</script>
+
+
+<script id="elite-site-ready-controller">
+(function() {
+  function activateSiteReady() {
+    if (document.body && !document.body.classList.contains('is--site-ready')) {
+      document.body.classList.add('is--site-ready');
+    }
+  }
+
+  // Reveal when document is complete or after smooth entry
+  if (document.readyState === 'complete') {
+    setTimeout(activateSiteReady, 400);
+  } else {
+    window.addEventListener('load', function() {
+      setTimeout(activateSiteReady, 400);
+    });
+    // Fallback safe timeout in case load event is delayed
+    setTimeout(activateSiteReady, 1200);
   }
 })();
 </script>
