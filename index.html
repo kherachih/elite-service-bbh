@@ -4026,26 +4026,56 @@ document.addEventListener('DOMContentLoaded', function() {
   if (form) {
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const name = document.getElementById('contact-name')?.value || 'Cher client';
-      const phone = document.getElementById('contact-phone')?.value || '';
+      const name = document.getElementById('contact-name')?.value.trim() || 'Client';
+      const company = document.getElementById('contact-company')?.value.trim() || '';
+      const phone = document.getElementById('contact-phone')?.value.trim() || '';
+      const email = document.getElementById('contact-email')?.value.trim() || '';
       const select = document.getElementById('contact-nature-select');
-      const selectedOptionText = select?.options[select.selectedIndex]?.text || 'votre projet';
+      const selectedOptionText = select?.options[select.selectedIndex]?.text || 'Projet';
+      const budgetSelect = document.getElementById('contact-budget-select');
+      const budget = budgetSelect?.value || '';
+      const message = document.getElementById('contact-message')?.value.trim() || '';
+      const planVal = select?.value || '';
+      const isSponsoring = planVal.startsWith('spons_');
 
-      const successTitle = document.getElementById('success-title');
-      const successText = document.getElementById('success-text');
-
-      if (successTitle) {
-        successTitle.textContent = 'Merci ' + name + ' !';
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.75';
       }
-      if (successText) {
-        successText.innerHTML = 'Votre demande pour <strong>' + selectedOptionText + '</strong> a bien été enregistrée.<br/>Notre équipe d\'ingénieurs vous contactera directement sur votre numéro WhatsApp <strong>' + phone + '</strong> sous 24h ouvrées.';
-      }
 
-      form.style.display = 'none';
-      const badgeBlock = document.getElementById('contact-selected-plan-badge');
-      if (badgeBlock) badgeBlock.style.display = 'none';
-      const successBlock = document.getElementById('contact-success');
-      if (successBlock) successBlock.style.display = 'block';
+      // Submit lead to real API
+      fetch('/api/submit.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: isSponsoring ? 'sponsoring' : 'devis',
+          name: name,
+          company: company,
+          phone: phone,
+          email: email,
+          service_or_plan: selectedOptionText,
+          budget: budget,
+          details: message
+        })
+      })
+      .finally(() => {
+        const successTitle = document.getElementById('success-title');
+        const successText = document.getElementById('success-text');
+
+        if (successTitle) {
+          successTitle.textContent = 'Merci ' + name + ' !';
+        }
+        if (successText) {
+          successText.innerHTML = 'Votre demande pour <strong>' + selectedOptionText + '</strong> a bien été enregistrée.<br/>Notre équipe d\'ingénieurs vous contactera directement sur votre numéro WhatsApp <strong>' + phone + '</strong> sous 24h ouvrées.';
+        }
+
+        form.style.display = 'none';
+        const badgeBlock = document.getElementById('contact-selected-plan-badge');
+        if (badgeBlock) badgeBlock.style.display = 'none';
+        const successBlock = document.getElementById('contact-success');
+        if (successBlock) successBlock.style.display = 'block';
+      });
     });
   }
 
@@ -4239,69 +4269,334 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.innerHTML = '<span>Enregistrement du Dossier...</span>';
 
     const ref = 'ERP-' + Math.floor(100000 + Math.random() * 900000);
-    const leadData = {
-      ref: ref,
-      date: new Date().toISOString(),
-      name: name,
-      company: company,
-      whatsapp: whatsapp,
-      email: email,
-      sector: sector,
-      users: users,
-      modules: selectedChips,
-      notes: notes,
-      offer: '3 Mois Gratuits'
-    };
+    const detailsStr = 'Secteur: ' + sector + ' | Utilisateurs: ' + users + ' | Modules: ' + (selectedChips.length ? selectedChips.join(', ') : 'Tous modules') + (notes ? ' | Notes: ' + notes : '');
 
-    // Store in localStorage
-    try {
-      const existing = JSON.parse(localStorage.getItem('elite_erp_demo_leads') || '[]');
-      existing.push(leadData);
-      localStorage.setItem('elite_erp_demo_leads', JSON.stringify(existing));
-    } catch(err){}
-
-    setTimeout(() => {
-      // Trigger Confetti if canvas-confetti exists
-      if (typeof window.confetti === 'function') {
-        window.confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }
+    // Submit lead to real API endpoint
+    fetch('/api/submit.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        form_type: 'erp_demo',
+        name: name,
+        company: company,
+        phone: whatsapp,
+        email: email,
+        service_or_plan: "Démo ERP Cloud d'Entreprise (3 Mois Gratuits)",
+        details: detailsStr,
+        extra: {
+          ref: ref,
+          sector: sector,
+          users: users,
+          modules: selectedChips,
+          notes: notes,
+          offer: '3 Mois d\'Abonnement Gratuit'
+        }
+      })
+    })
+    .finally(() => {
+      // Store in localStorage for client cache
+      try {
+        const leadData = { ref, date: new Date().toISOString(), name, company, whatsapp, email, sector, users, modules: selectedChips, notes, offer: '3 Mois Gratuits' };
+        const existing = JSON.parse(localStorage.getItem('elite_erp_demo_leads') || '[]');
+        existing.push(leadData);
+        localStorage.setItem('elite_erp_demo_leads', JSON.stringify(existing));
+      } catch(err){}
 
       // Populate success screen
-      document.getElementById('erp-success-client-name').textContent = name;
-      document.getElementById('erp-success-client-phone').textContent = whatsapp;
-      document.getElementById('erp-success-ref').textContent = ref;
+      const cName = document.getElementById('erp-success-client-name');
+      if (cName) cName.textContent = name;
+      const cPhone = document.getElementById('erp-success-client-phone');
+      if (cPhone) cPhone.textContent = whatsapp;
+      const cRef = document.getElementById('erp-success-ref');
+      if (cRef) cRef.textContent = ref;
 
       // WhatsApp direct message prefill
       const waMsg = encodeURIComponent(
-        'Bonjour ELITE SERVICE BBH, je viens de postuler pour la démo de votre ERP (Réf: ' + ref + ').\n\n' +
+        'Bonjour ELITE SERVICE, je viens de postuler pour la démo de votre ERP (Réf: ' + ref + ').\n\n' +
         '• Nom : ' + name + '\n' +
         '• Entreprise : ' + company + '\n' +
         '• Secteur : ' + sector + '\n' +
         '• Postes : ' + users + '\n' +
         '• Offre réservée : 3 Mois Gratuits\n\n' +
-        'Pouvez-vous me transmettre les identifiants d\'accès ? Merci !'
+        'Pouvez-vous me transmettre mes accès temporaires pour tester le système ? Merci !'
       );
       const waBtn = document.getElementById('erp-success-whatsapp-btn');
       if (waBtn) {
-        waBtn.href = 'https://wa.me/213655123456?text=' + waMsg;
+        waBtn.href = 'https://wa.me/213555000000?text=' + waMsg;
       }
 
       // Transition views
-      formWrapper.style.display = 'none';
-      successWrapper.style.display = 'block';
+      if (formWrapper) formWrapper.style.display = 'none';
+      if (successWrapper) successWrapper.style.display = 'block';
       const scroller = modal.querySelector('.dossier-content');
       if (scroller) scroller.scrollTop = 0;
-    }, 600);
+    });
   };
 
   window.openEliteErpDemoModal = openErpModal;
   window.closeEliteErpDemoModal = closeErpModal;
 })();
 </script>
+
+<!-- ==================== DEDICATED SPONSORING ORDER POPUP MODAL ==================== -->
+<div id="elite-sponsoring-modal" data-lenis-prevent="true" style="display:none; position:fixed; inset:0; z-index:99998; background:rgba(3, 4, 7, 0.88); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); padding:1rem; box-sizing:border-box;">
+  
+  <div class="dossier-container" style="max-width:540px;" onclick="event.stopPropagation();">
+    <!-- Top Close Button -->
+    <button type="button" class="dossier-close-btn" onclick="window.closeEliteSponsoringModal();" aria-label="Fermer la fenêtre">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <div class="dossier-content">
+      <!-- Title Section -->
+      <div class="dossier-title-section" style="border-image: linear-gradient(90deg, #f97316, #ec4899, transparent) 1;">
+        <div class="dossier-title-icon" style="color:#f97316;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+        </div>
+        <div>
+          <h2 class="dossier-title" style="letter-spacing:1.5px; font-size:1.4rem;">CAMPAGNE SPONSORING</h2>
+          <div class="dossier-subtitle" id="spons-modal-subtitle" style="color:#fb923c;">Formule Facebook &amp; Instagram</div>
+        </div>
+      </div>
+
+      <!-- Plan Summary Card -->
+      <div id="spons-plan-summary" style="background:linear-gradient(135deg, rgba(249,115,22,0.12), rgba(236,72,153,0.12)); border:1px solid rgba(249,115,22,0.35); border-radius:12px; padding:14px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <div id="spons-modal-plan-title" style="font-weight:800; font-size:1.1rem; color:#fff;">Standard (5 500 DA)</div>
+          <div id="spons-modal-plan-desc" style="font-size:0.8rem; color:#cbd5e1;">7 Jours • Facebook &amp; Instagram • Ciblage qualifié</div>
+        </div>
+        <div id="spons-modal-plan-price" style="font-weight:900; font-size:1.35rem; color:#f97316; white-space:nowrap;">5 500 DA</div>
+      </div>
+
+      <!-- Form Wrapper -->
+      <div id="elite-sponsoring-form-wrapper">
+        <form id="elite-sponsoring-form" class="dossier-form" onsubmit="window.handleEliteSponsoringSubmit(event);">
+          <input type="hidden" id="spons-plan-key" value="spons_standard" />
+
+          <!-- Row 1: Nom & Entreprise -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+            <div class="dossier-input-group">
+              <label for="spons-lead-name">Nom &amp; Prénom <span class="req">*</span></label>
+              <input type="text" id="spons-lead-name" placeholder="Ex: Samir Belkacem" required />
+            </div>
+            <div class="dossier-input-group">
+              <label for="spons-lead-page">Page Facebook / Instagram <span class="req">*</span></label>
+              <input type="text" id="spons-lead-page" placeholder="Ex: facebook.com/moncommerce" required />
+            </div>
+          </div>
+
+          <!-- Row 2: WhatsApp & Email -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+            <div class="dossier-input-group">
+              <label for="spons-lead-whatsapp">Numéro WhatsApp <span class="req">*</span> <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Validation créas)</span></label>
+              <input type="tel" id="spons-lead-whatsapp" placeholder="Ex: 06 55 12 34 56" required />
+            </div>
+            <div class="dossier-input-group">
+              <label for="spons-lead-email">Email <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel)</span></label>
+              <input type="email" id="spons-lead-email" placeholder="contact@domaine.com" />
+            </div>
+          </div>
+
+          <!-- Row 3: Objectif Prioritaire -->
+          <div class="dossier-input-group">
+            <label for="spons-lead-objective">Objectif Principal de votre Campagne</label>
+            <select id="spons-lead-objective">
+              <option value="Ventes directes & Commandes de produits">🛍️ Ventes directes &amp; Commandes de produits</option>
+              <option value="Messages WhatsApp & Messenger (Prospects qualifiés)" selected>💬 Messages WhatsApp &amp; Messenger (Prospects qualifiés)</option>
+              <option value="Notoriété locale & Visibilité maximale">🚀 Notoriété locale &amp; Visibilité maximale</option>
+              <option value="Gain d'abonnés et engagement sur la page">👥 Gain d'abonnés et communauté</option>
+              <option value="Autre objectif sur-mesure">⚡ Autre objectif sur-mesure</option>
+            </select>
+          </div>
+
+          <!-- Row 4: Instructions / Message -->
+          <div class="dossier-input-group">
+            <label for="spons-lead-notes">Directives ou Lien de la publication à sponsoriser <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel)</span></label>
+            <textarea id="spons-lead-notes" rows="2" placeholder="Ex: Sponsoriser le dernier post sur la nouvelle collection, cibler Alger, Oran et Constantine..."></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="elite-sponsoring-submit-btn" class="dossier-submit-btn" style="background:linear-gradient(135deg, #f97316 0%, #ec4899 50%, #c026d3 100%); box-shadow:0 10px 30px rgba(249,115,22,0.35);">
+            <span id="spons-submit-btn-text">Commander cette Formule (5 500 DA) →</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Success Confirmation Block -->
+      <div id="elite-sponsoring-success" style="display:none; text-align:center; padding:20px 10px;">
+        <div style="width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg, rgba(249,115,22,0.25), rgba(236,72,153,0.25)); border:2px solid #f97316; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; box-shadow:0 0 25px rgba(249,115,22,0.4);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+
+        <h3 style="font-family:'Haffer XH', sans-serif; font-size:1.6rem; color:#fff; margin-bottom:8px; font-weight:800;">Commande Enregistrée !</h3>
+        <p style="color:#cbd5e1; font-size:0.95rem; line-height:1.5; margin-bottom:16px;">
+          Merci <strong id="spons-success-lead-name" style="color:#fff;"></strong>. Votre commande pour la formule <strong id="spons-success-plan-title" style="color:#f97316;"></strong> a bien été enregistrée dans notre système.
+        </p>
+
+        <div style="background:rgba(255,255,255,0.03); border:1px dashed rgba(249,115,22,0.4); border-radius:10px; padding:12px; margin-bottom:20px;">
+          <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8;">Référence de Commande</div>
+          <div id="spons-success-ref" style="font-family:'HafferMonoMedium', monospace; font-size:1.35rem; font-weight:800; color:#f97316; letter-spacing:0.05em; margin-top:4px;">SPONS-000000</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a id="spons-success-wa-btn" href="#" target="_blank" style="display:inline-flex; align-items:center; justify-content:center; gap:10px; background:#25d366; color:#ffffff; padding:0.9rem 1.4rem; border-radius:10px; font-weight:800; text-decoration:none; box-shadow:0 10px 25px rgba(37,211,102,0.4); font-size:0.95rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+            <span>Valider le lancement sur WhatsApp</span>
+          </a>
+          <button type="button" onclick="window.closeEliteSponsoringModal();" style="background:transparent; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.8); padding:0.7rem 1.1rem; border-radius:10px; font-weight:700; cursor:pointer; font-size:0.85rem;">
+            Fermer la fenêtre
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END DEDICATED SPONSORING POPUP MODAL -->
+
+<script id="elite-sponsoring-modal-controller">
+(function() {
+  const modal = document.getElementById('elite-sponsoring-modal');
+  const PLANS_DETAIL = {
+    'spons_essentiel': {
+      title: 'Essentiel (3 800 DA)',
+      price: '3 800 DA',
+      desc: 'Formule 5 Jours • Facebook & Instagram • Visibilité ciblée',
+      subtitle: 'Formule 5 Jours • Particuliers & Petits Commerces'
+    },
+    'spons_standard': {
+      title: 'Standard (5 500 DA)',
+      price: '5 500 DA',
+      desc: 'Formule 7 Jours • Facebook & Instagram • Ciblage qualifié (Recommandé)',
+      subtitle: 'Formule 7 Jours • Facebook & Instagram (Le Plus Demandé)'
+    },
+    'spons_premium': {
+      title: 'Premium (12 000 DA)',
+      price: '12 000 DA',
+      desc: 'Formule 15 Jours • Portée Maximale 58 Wilayas • Double Créa',
+      subtitle: 'Formule 15 Jours • Visibilité d\'Envergure Nationale'
+    },
+    'spons_30j': {
+      title: 'Pack 30 Jours (24 000 DA)',
+      price: '24 000 DA',
+      desc: '1 Mois Complet • Présence Continue & Optimisation Hebdomadaire',
+      subtitle: 'Pack 30 Jours • Présence Permanente & Retargeting'
+    },
+    'spons_tiktok': {
+      title: 'TikTok Boost (10 000 DA/j)',
+      price: '10 000 DA / jour',
+      desc: 'Campagne TikTok Ads haute viralité avec optimisation de format court',
+      subtitle: 'TikTok Ads • Campagne Haute Viralité & Trafic'
+    },
+    'spons_surmesure': {
+      title: 'Campagne Sur-Mesure',
+      price: 'Sur devis',
+      desc: 'Campagne multi-réseaux (Meta + TikTok + Google Ads) adaptée à vos objectifs',
+      subtitle: 'Stratégie Multi-Canale Dédiée aux Entreprises'
+    }
+  };
+
+  let currentPlanKey = 'spons_standard';
+
+  function openSponsoringModal(planKey) {
+    if (planKey && PLANS_DETAIL[planKey]) {
+      currentPlanKey = planKey;
+    } else {
+      currentPlanKey = 'spons_standard';
+    }
+
+    const p = PLANS_DETAIL[currentPlanKey];
+    document.getElementById('spons-plan-key').value = currentPlanKey;
+    document.getElementById('spons-modal-plan-title').textContent = p.title;
+    document.getElementById('spons-modal-plan-desc').textContent = p.desc;
+    document.getElementById('spons-modal-plan-price').textContent = p.price;
+    document.getElementById('spons-modal-subtitle').textContent = p.subtitle;
+    document.getElementById('spons-submit-btn-text').textContent = 'Commander cette Formule (' + p.price + ') →';
+
+    // Reset view
+    document.getElementById('elite-sponsoring-form-wrapper').style.display = 'block';
+    document.getElementById('elite-sponsoring-success').style.display = 'none';
+
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => {
+      modal.style.opacity = '1';
+    });
+  }
+
+  function closeSponsoringModal() {
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeSponsoringModal();
+  });
+
+  window.handleEliteSponsoringSubmit = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('elite-sponsoring-submit-btn');
+    const planKey = document.getElementById('spons-plan-key').value;
+    const plan = PLANS_DETAIL[planKey] || PLANS_DETAIL['spons_standard'];
+    const name = document.getElementById('spons-lead-name').value.trim();
+    const page = document.getElementById('spons-lead-page').value.trim();
+    const whatsapp = document.getElementById('spons-lead-whatsapp').value.trim();
+    const email = document.getElementById('spons-lead-email').value.trim();
+    const objective = document.getElementById('spons-lead-objective').value;
+    const notes = document.getElementById('spons-lead-notes').value.trim();
+
+    if (!name || !page || !whatsapp) {
+      alert('Veuillez remplir votre Nom, votre Page et votre numéro WhatsApp.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.style.opacity = '0.75';
+    btn.innerHTML = '<span>Enregistrement de la commande...</span>';
+
+    const ref = 'SPONS-' + Math.floor(100000 + Math.random() * 900000);
+    const detailsStr = 'Page: ' + page + ' | Objectif: ' + objective + (notes ? ' | Directives: ' + notes : '');
+
+    fetch('/api/submit.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        form_type: 'sponsoring',
+        name: name,
+        company: page,
+        phone: whatsapp,
+        email: email,
+        service_or_plan: plan.title,
+        budget: plan.price,
+        details: detailsStr,
+        extra: {
+          ref: ref,
+          page_link: page,
+          objective: objective,
+          notes: notes,
+          plan_key: planKey
+        }
+      })
+    })
+    .finally(() => {
+      document.getElementById('elite-sponsoring-form-wrapper').style.display = 'none';
+      const successBlock = document.getElementById('elite-sponsoring-success');
+      successBlock.style.display = 'block';
+
+      document.getElementById('spons-success-lead-name').textContent = name;
+      document.getElementById('spons-success-plan-title').textContent = plan.title;
+      document.getElementById('spons-success-ref').textContent = ref;
+
+      const waText = "Bonjour ELITE SERVICE, je viens de passer commande pour la campagne Sponsoring !%0A%0A*Réf :* " + ref + "%0A*Formule :* " + encodeURIComponent(plan.title) + "%0A*Page :* " + encodeURIComponent(page) + "%0A*Client :* " + encodeURIComponent(name) + " (" + encodeURIComponent(whatsapp) + ")%0A*Objectif :* " + encodeURIComponent(objective) + "%0A%0AMerci de m'indiquer la procédure pour le lancement.";
+      document.getElementById('spons-success-wa-btn').href = "https://wa.me/213555000000?text=" + waText;
+    });
+  };
+
+  window.openEliteSponsoringModal = openSponsoringModal;
+  window.closeEliteSponsoringModal = closeSponsoringModal;
+})();
+</script>
+
 
 
 <script id="elite-nav-showcase-controller">
@@ -4484,6 +4779,41 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(activateSiteReady, 1200);
   }
 })();
+</script>
+
+
+<script id="elite-newsletter-controller">
+document.addEventListener('DOMContentLoaded', function() {
+  const nForm = document.getElementById('wf-form-Newsletter-Footer');
+  if (nForm) {
+    nForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('newsletter-email');
+      const nameInput = document.getElementById('newsletter-name');
+      const email = emailInput ? emailInput.value.trim() : '';
+      const name = nameInput ? nameInput.value.trim() : 'Abonné Newsletter';
+
+      if (!email) return;
+
+      fetch('/api/submit.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: 'newsletter',
+          name: name,
+          email: email
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        nForm.innerHTML = '<div style="color:#f472b6; font-weight:700; padding:1.2rem 0; font-size:1rem; display:flex; align-items:center; gap:8px;"><span>✓</span> <span>Merci ! Vous êtes désormais abonné aux publications ELITE.</span></div>';
+      })
+      .catch(() => {
+        nForm.innerHTML = '<div style="color:#f472b6; font-weight:700; padding:1.2rem 0; font-size:1rem;">✓ Inscription enregistrée avec succès !</div>';
+      });
+    });
+  }
+});
 </script>
 
 </body></html>
