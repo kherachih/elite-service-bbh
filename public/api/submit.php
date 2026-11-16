@@ -54,7 +54,7 @@ if (!in_array($form_type, ['erp_demo', 'sponsoring', 'devis', 'newsletter', 'cus
 }
 
 $name = trim($data['name'] ?? $data['nom'] ?? '');
-$company = trim($data['company'] ?? $data['entreprise'] ?? '');
+$company = trim($data['company'] ?? $data['entreprise'] ?? $data['page'] ?? $data['page_name'] ?? $data['nom_page'] ?? '');
 $phone = trim($data['phone'] ?? $data['telephone'] ?? '');
 $email = filter_var(trim($data['email'] ?? ''), FILTER_SANITIZE_EMAIL);
 $service_or_plan = trim($data['service_or_plan'] ?? $data['plan'] ?? $data['nature'] ?? '');

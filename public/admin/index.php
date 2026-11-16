@@ -50,7 +50,7 @@ $stmt->execute($params);
 $leads = $stmt->fetchAll();
 
 // Helper to format Algerian phone numbers for WhatsApp
-function format_whatsapp_url($phone, $name, $service) {
+function format_whatsapp_url($phone, $name, $service, $form_type = '', $company = '') {
     if (empty($phone)) return '';
     $clean = preg_replace('/[^0-9]/', '', $phone);
     // If starts with 0 (e.g. 0555123456 or 0655123456 or 0770123456), replace leading 0 with 213
@@ -59,7 +59,14 @@ function format_whatsapp_url($phone, $name, $service) {
     } elseif (strlen($clean) === 9) {
         $clean = '213' . $clean;
     }
-    $text = "Bonjour " . ($name ?: '') . ",\n\nJe vous contacte suite à votre demande sur ELITE SERVICE concernant : " . ($service ?: 'votre projet') . ".\n\nComment pouvons-nous vous accompagner ?";
+    if ($form_type === 'sponsoring') {
+        $page_info = !empty($company) ? " pour votre page \"" . $company . "\"" : "";
+        $text = "Bonjour " . ($name ?: '') . ",\n\nJe vous contacte suite à votre commande de Sponsoring sur ELITE SERVICE pour l'offre : " . ($service ?: 'Sponsoring') . $page_info . ".\n\nVotre page est-elle prête pour configurer les audiences et lancer la campagne ?";
+    } elseif ($form_type === 'erp_demo') {
+        $text = "Bonjour " . ($name ?: '') . ",\n\nJe vous contacte suite à votre demande d'accès gratuit de 3 mois à l'ERP ELITE Cloud.\n\nÊtes-vous disponible pour activer vos accès et planifier votre démonstration personnalisée ?";
+    } else {
+        $text = "Bonjour " . ($name ?: '') . ",\n\nJe vous contacte suite à votre demande sur ELITE SERVICE concernant : " . ($service ?: 'votre projet') . ".\n\nComment pouvons-nous vous accompagner ?";
+    }
     return "https://wa.me/" . $clean . "?text=" . urlencode($text);
 }
 ?>
@@ -759,7 +766,7 @@ function format_whatsapp_url($phone, $name, $service) {
             <?php else: ?>
               <?php foreach ($leads as $lead): 
                 $date_str = date('d/m/Y H:i', strtotime($lead['created_at']));
-                $wa_url = format_whatsapp_url($lead['phone'], $lead['name'], $lead['service_or_plan']);
+                $wa_url = format_whatsapp_url($lead['phone'], $lead['name'], $lead['service_or_plan'], $lead['form_type'], $lead['company']);
               ?>
                 <tr id="lead-row-<?php echo $lead['id']; ?>">
                   <td style="font-size:0.8rem; color:#94a3b8; white-space:nowrap;">
@@ -785,9 +792,15 @@ function format_whatsapp_url($phone, $name, $service) {
                       <?php echo htmlspecialchars($lead['name']); ?>
                     </div>
                     <?php if (!empty($lead['company'])): ?>
-                      <div style="font-size:0.8rem; color:#94a3b8;">
-                        🏢 <?php echo htmlspecialchars($lead['company']); ?>
-                      </div>
+                      <?php if ($lead['form_type'] === 'sponsoring'): ?>
+                        <div style="font-size:0.82rem; color:#f472b6; font-weight:700; margin-top:2px;">
+                          📱 Page : <?php echo htmlspecialchars($lead['company']); ?>
+                        </div>
+                      <?php else: ?>
+                        <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">
+                          🏢 <?php echo htmlspecialchars($lead['company']); ?>
+                        </div>
+                      <?php endif; ?>
                     <?php endif; ?>
                   </td>
 
@@ -973,7 +986,7 @@ function format_whatsapp_url($phone, $name, $service) {
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08);">
             <div>
               <h3 style="font-size:1.4rem; color:#fff; font-weight:800;">${l.name}</h3>
-              <div style="font-size:0.85rem; color:#94a3b8;">${l.company ? '🏢 ' + l.company + ' • ' : ''}Reçu le ${l.created_at}</div>
+              <div style="font-size:0.85rem; color:#94a3b8;">${l.company ? (l.form_type === 'sponsoring' ? '<span style=\"color:#f472b6; font-weight:700;\">📱 Page : ' + l.company + '</span> • ' : '🏢 ' + l.company + ' • ') : ''}Reçu le ${l.created_at}</div>
             </div>
             <span class="badge badge-erp">${l.form_type}</span>
           </div>

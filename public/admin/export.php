@@ -43,7 +43,7 @@ fputcsv($output, [
     'Date de création',
     'Type de formulaire',
     'Nom & Prénom',
-    'Entreprise / Marque',
+    'Entreprise / Nom de la Page',
     'Téléphone / WhatsApp',
     'Email',
     'Service / Plan',

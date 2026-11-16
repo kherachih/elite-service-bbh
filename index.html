@@ -4341,7 +4341,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- ==================== DEDICATED SPONSORING ORDER POPUP MODAL ==================== -->
 <div id="elite-sponsoring-modal" data-lenis-prevent="true" style="display:none; position:fixed; inset:0; z-index:99998; background:rgba(3, 4, 7, 0.88); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); padding:1rem; box-sizing:border-box;">
   
-  <div class="dossier-container" style="max-width:540px;" onclick="event.stopPropagation();">
+  <div class="dossier-container" style="max-width:560px;" onclick="event.stopPropagation();">
     <!-- Top Close Button -->
     <button type="button" class="dossier-close-btn" onclick="window.closeEliteSponsoringModal();" aria-label="Fermer la fenêtre">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -4359,7 +4359,21 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
-      <!-- Plan Summary Card -->
+      <!-- Plan Switcher & Summary Card -->
+      <div style="margin-bottom:16px;">
+        <label for="spons-plan-select" style="display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:#94a3b8; font-weight:700; margin-bottom:6px;">
+          📦 Choisissez votre Formule Sponsoring
+        </label>
+        <select id="spons-plan-select" onchange="window.handleSponsPlanSelectChange(this.value);" style="width:100%; box-sizing:border-box; background:#12141f; border:1px solid rgba(249,115,22,0.45); color:#ffffff; font-weight:700; font-size:0.95rem; padding:10px 14px; border-radius:10px; outline:none; cursor:pointer;">
+          <option value="spons_essentiel">🎯 Essentiel (3 800 DA) — 5 Jours • Facebook &amp; Instagram</option>
+          <option value="spons_standard" selected>🔥 Standard (5 500 DA) — 7 Jours • Facebook &amp; Instagram (Recommandé)</option>
+          <option value="spons_premium">💎 Premium (12 000 DA) — 15 Jours • Portée 58 Wilayas</option>
+          <option value="spons_30j">⚡ Pack 30 Jours (24 000 DA) — 1 Mois Complet • Présence Continue</option>
+          <option value="spons_tiktok">📱 TikTok Boost (10 000 DA / jour) — Campagne Vidéo TikTok Ads</option>
+          <option value="spons_entreprise">🏢 Pack Entreprise (34 000 DA / mois) — Gestion Mensuelle FB, Insta &amp; TikTok</option>
+        </select>
+      </div>
+
       <div id="spons-plan-summary" style="background:linear-gradient(135deg, rgba(249,115,22,0.12), rgba(236,72,153,0.12)); border:1px solid rgba(249,115,22,0.35); border-radius:12px; padding:14px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
         <div>
           <div id="spons-modal-plan-title" style="font-weight:800; font-size:1.1rem; color:#fff;">Standard (5 500 DA)</div>
@@ -4373,46 +4387,52 @@ document.addEventListener('DOMContentLoaded', function() {
         <form id="elite-sponsoring-form" class="dossier-form" onsubmit="window.handleEliteSponsoringSubmit(event);">
           <input type="hidden" id="spons-plan-key" value="spons_standard" />
 
-          <!-- Row 1: Nom & Entreprise -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-            <div class="dossier-input-group">
-              <label for="spons-lead-name">Nom &amp; Prénom <span class="req">*</span></label>
-              <input type="text" id="spons-lead-name" placeholder="Ex: Samir Belkacem" required />
-            </div>
-            <div class="dossier-input-group">
-              <label for="spons-lead-page">Page Facebook / Instagram <span class="req">*</span></label>
-              <input type="text" id="spons-lead-page" placeholder="Ex: facebook.com/moncommerce" required />
+          <!-- IMPORTANT FIELD: Nom de la Page Facebook / Instagram / TikTok -->
+          <div class="dossier-input-group" style="background:rgba(236,72,153,0.08); border:1px solid rgba(236,72,153,0.4); border-radius:12px; padding:12px 14px; margin-bottom:14px;">
+            <label for="spons-lead-page" style="color:#f472b6; font-weight:800; font-size:0.85rem; display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <span>🏷️ Nom de votre Page (Facebook / Instagram / TikTok) <span class="req" style="color:#f43f5e; font-size:1.1em;">*</span></span>
+              <span style="font-size:0.72rem; color:#cbd5e1; font-weight:400;">Obligatoire</span>
+            </label>
+            <input type="text" id="spons-lead-page" placeholder="Ex: Boutique Sarah Mode / facebook.com/sarahmode" required style="width:100%; box-sizing:border-box; background:rgba(10,11,16,0.9); border:1px solid rgba(236,72,153,0.45); color:#fff; font-size:0.95rem; font-weight:600; padding:10px 12px; border-radius:8px; outline:none;" onfocus="this.style.borderColor='#f97316';" onblur="this.style.borderColor='rgba(236,72,153,0.45)';" />
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">
+              Indiquez le nom exact ou le lien de la page sur laquelle diffuser votre campagne publicitaire.
             </div>
           </div>
 
-          <!-- Row 2: WhatsApp & Email -->
+          <!-- Row: Nom & WhatsApp -->
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
             <div class="dossier-input-group">
-              <label for="spons-lead-whatsapp">Numéro WhatsApp <span class="req">*</span> <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Validation créas)</span></label>
-              <input type="tel" id="spons-lead-whatsapp" placeholder="Ex: 06 55 12 34 56" required />
+              <label for="spons-lead-name">Nom &amp; Prénom du contact <span class="req">*</span></label>
+              <input type="text" id="spons-lead-name" placeholder="Ex: Karim Benali" required />
             </div>
             <div class="dossier-input-group">
-              <label for="spons-lead-email">Email <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel)</span></label>
+              <label for="spons-lead-whatsapp">Numéro WhatsApp <span class="req">*</span> <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Pour valider les visuels)</span></label>
+              <input type="tel" id="spons-lead-whatsapp" placeholder="Ex: 05 55 12 34 56 ou +213 ..." required />
+            </div>
+          </div>
+
+          <!-- Row: Email & Objectif -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+            <div class="dossier-input-group">
+              <label for="spons-lead-email">Adresse Email <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel pour facture)</span></label>
               <input type="email" id="spons-lead-email" placeholder="contact@domaine.com" />
             </div>
+            <div class="dossier-input-group">
+              <label for="spons-lead-objective">Objectif Principal de la Campagne</label>
+              <select id="spons-lead-objective">
+                <option value="Messages WhatsApp & Messenger (Prospects qualifiés)" selected>💬 Messages WhatsApp &amp; Messenger</option>
+                <option value="Ventes directes & Commandes de produits">🛍️ Ventes directes &amp; Commandes</option>
+                <option value="Notoriété locale & Visibilité maximale">🚀 Notoriété &amp; Visibilité maximale</option>
+                <option value="Gain d'abonnés et communauté active">👥 Gain d'abonnés &amp; Communauté</option>
+                <option value="Trafic vers site web ou application">🌐 Trafic vers site web</option>
+              </select>
+            </div>
           </div>
 
-          <!-- Row 3: Objectif Prioritaire -->
+          <!-- Directives / Remarques -->
           <div class="dossier-input-group">
-            <label for="spons-lead-objective">Objectif Principal de votre Campagne</label>
-            <select id="spons-lead-objective">
-              <option value="Ventes directes & Commandes de produits">🛍️ Ventes directes &amp; Commandes de produits</option>
-              <option value="Messages WhatsApp & Messenger (Prospects qualifiés)" selected>💬 Messages WhatsApp &amp; Messenger (Prospects qualifiés)</option>
-              <option value="Notoriété locale & Visibilité maximale">🚀 Notoriété locale &amp; Visibilité maximale</option>
-              <option value="Gain d'abonnés et engagement sur la page">👥 Gain d'abonnés et communauté</option>
-              <option value="Autre objectif sur-mesure">⚡ Autre objectif sur-mesure</option>
-            </select>
-          </div>
-
-          <!-- Row 4: Instructions / Message -->
-          <div class="dossier-input-group">
-            <label for="spons-lead-notes">Directives ou Lien de la publication à sponsoriser <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel)</span></label>
-            <textarea id="spons-lead-notes" rows="2" placeholder="Ex: Sponsoriser le dernier post sur la nouvelle collection, cibler Alger, Oran et Constantine..."></textarea>
+            <label for="spons-lead-notes">Lien de la publication à sponsoriser ou consignes particulières <span style="font-weight:400; opacity:0.65; font-size:0.75rem;">(Optionnel)</span></label>
+            <textarea id="spons-lead-notes" rows="2" placeholder="Ex: Booster le dernier post sur la nouvelle collection, cibler femmes 20-35 ans à Alger et Oran..."></textarea>
           </div>
 
           <!-- Submit Button -->
@@ -4430,7 +4450,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <h3 style="font-family:'Haffer XH', sans-serif; font-size:1.6rem; color:#fff; margin-bottom:8px; font-weight:800;">Commande Enregistrée !</h3>
         <p style="color:#cbd5e1; font-size:0.95rem; line-height:1.5; margin-bottom:16px;">
-          Merci <strong id="spons-success-lead-name" style="color:#fff;"></strong>. Votre commande pour la formule <strong id="spons-success-plan-title" style="color:#f97316;"></strong> a bien été enregistrée dans notre système.
+          Merci <strong id="spons-success-lead-name" style="color:#fff;"></strong>. Votre commande pour la formule <strong id="spons-success-plan-title" style="color:#f97316;"></strong> concernant votre page <strong id="spons-success-page-name" style="color:#f472b6;"></strong> a bien été enregistrée dans notre système.
         </p>
 
         <div style="background:rgba(255,255,255,0.03); border:1px dashed rgba(249,115,22,0.4); border-radius:10px; padding:12px; margin-bottom:20px;">
@@ -4460,44 +4480,44 @@ document.addEventListener('DOMContentLoaded', function() {
     'spons_essentiel': {
       title: 'Essentiel (3 800 DA)',
       price: '3 800 DA',
-      desc: 'Formule 5 Jours • Facebook & Instagram • Visibilité ciblée',
+      desc: '5 Jours • Facebook & Instagram • Couverture 6k à 17k / jour',
       subtitle: 'Formule 5 Jours • Particuliers & Petits Commerces'
     },
     'spons_standard': {
       title: 'Standard (5 500 DA)',
       price: '5 500 DA',
-      desc: 'Formule 7 Jours • Facebook & Instagram • Ciblage qualifié (Recommandé)',
+      desc: '7 Jours • Facebook & Instagram • Ciblage qualifié (Recommandé)',
       subtitle: 'Formule 7 Jours • Facebook & Instagram (Le Plus Demandé)'
     },
     'spons_premium': {
       title: 'Premium (12 000 DA)',
       price: '12 000 DA',
-      desc: 'Formule 15 Jours • Portée Maximale 58 Wilayas • Double Créa',
+      desc: '15 Jours • Facebook & Instagram • Portée Maximale 58 Wilayas',
       subtitle: 'Formule 15 Jours • Visibilité d\'Envergure Nationale'
     },
     'spons_30j': {
       title: 'Pack 30 Jours (24 000 DA)',
       price: '24 000 DA',
-      desc: '1 Mois Complet • Présence Continue & Optimisation Hebdomadaire',
+      desc: '30 Jours • Présence Continue • 1 Mois Complet & Reporting',
       subtitle: 'Pack 30 Jours • Présence Permanente & Retargeting'
     },
     'spons_tiktok': {
-      title: 'TikTok Boost (10 000 DA/j)',
+      title: 'TikTok Boost (10 000 DA / jour)',
       price: '10 000 DA / jour',
-      desc: 'Campagne TikTok Ads haute viralité avec optimisation de format court',
+      desc: 'Format Vidéo • Par Jour • Trafic Viral & Conversion Directe',
       subtitle: 'TikTok Ads • Campagne Haute Viralité & Trafic'
     },
-    'spons_surmesure': {
-      title: 'Campagne Sur-Mesure',
-      price: 'Sur devis',
-      desc: 'Campagne multi-réseaux (Meta + TikTok + Google Ads) adaptée à vos objectifs',
-      subtitle: 'Stratégie Multi-Canale Dédiée aux Entreprises'
+    'spons_entreprise': {
+      title: 'Pack Entreprise (34 000 DA / mois)',
+      price: '34 000 DA / mois',
+      desc: 'Stratégie Mensuelle Complète • FB, Insta & TikTok • Community Manager Dédié',
+      subtitle: 'Formule Mensuelle Dédiée aux PME & Grandes Entreprises'
     }
   };
 
   let currentPlanKey = 'spons_standard';
 
-  function openSponsoringModal(planKey) {
+  function applyPlanToModal(planKey) {
     if (planKey && PLANS_DETAIL[planKey]) {
       currentPlanKey = planKey;
     } else {
@@ -4505,33 +4525,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const p = PLANS_DETAIL[currentPlanKey];
-    document.getElementById('spons-plan-key').value = currentPlanKey;
-    document.getElementById('spons-modal-plan-title').textContent = p.title;
-    document.getElementById('spons-modal-plan-desc').textContent = p.desc;
-    document.getElementById('spons-modal-plan-price').textContent = p.price;
-    document.getElementById('spons-modal-subtitle').textContent = p.subtitle;
-    document.getElementById('spons-submit-btn-text').textContent = 'Commander cette Formule (' + p.price + ') →';
+    const keyInput = document.getElementById('spons-plan-key');
+    if (keyInput) keyInput.value = currentPlanKey;
+
+    const select = document.getElementById('spons-plan-select');
+    if (select && select.value !== currentPlanKey) {
+      select.value = currentPlanKey;
+    }
+
+    const titleEl = document.getElementById('spons-modal-plan-title');
+    if (titleEl) titleEl.textContent = p.title;
+
+    const descEl = document.getElementById('spons-modal-plan-desc');
+    if (descEl) descEl.textContent = p.desc;
+
+    const priceEl = document.getElementById('spons-modal-plan-price');
+    if (priceEl) priceEl.textContent = p.price;
+
+    const subtitleEl = document.getElementById('spons-modal-subtitle');
+    if (subtitleEl) subtitleEl.textContent = p.subtitle;
+
+    const btnTextEl = document.getElementById('spons-submit-btn-text');
+    if (btnTextEl) btnTextEl.textContent = 'Commander cette Formule (' + p.price + ') →';
+  }
+
+  window.handleSponsPlanSelectChange = function(val) {
+    applyPlanToModal(val);
+  };
+
+  function openSponsoringModal(planKey) {
+    applyPlanToModal(planKey);
 
     // Reset view
-    document.getElementById('elite-sponsoring-form-wrapper').style.display = 'block';
-    document.getElementById('elite-sponsoring-success').style.display = 'none';
+    const formWrapper = document.getElementById('elite-sponsoring-form-wrapper');
+    if (formWrapper) formWrapper.style.display = 'block';
 
-    modal.style.display = 'flex';
-    requestAnimationFrame(() => {
-      modal.style.opacity = '1';
-    });
+    const successBlock = document.getElementById('elite-sponsoring-success');
+    if (successBlock) successBlock.style.display = 'none';
+
+    const submitBtn = document.getElementById('elite-sponsoring-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+
+    if (modal) {
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+      });
+    }
   }
 
   function closeSponsoringModal() {
+    if (!modal) return;
     modal.style.opacity = '0';
     setTimeout(() => {
       modal.style.display = 'none';
     }, 300);
   }
 
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeSponsoringModal();
-  });
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeSponsoringModal();
+    });
+  }
 
   window.handleEliteSponsoringSubmit = function(e) {
     e.preventDefault();
@@ -4546,13 +4604,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const notes = document.getElementById('spons-lead-notes').value.trim();
 
     if (!name || !page || !whatsapp) {
-      alert('Veuillez remplir votre Nom, votre Page et votre numéro WhatsApp.');
+      alert('Veuillez renseigner votre Nom, le Nom de votre Page et votre numéro WhatsApp.');
       return;
     }
 
-    btn.disabled = true;
-    btn.style.opacity = '0.75';
-    btn.innerHTML = '<span>Enregistrement de la commande...</span>';
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = '0.75';
+      btn.innerHTML = '<span>Transmission de la commande...</span>';
+    }
 
     const ref = 'SPONS-' + Math.floor(100000 + Math.random() * 900000);
     const detailsStr = 'Page: ' + page + ' | Objectif: ' + objective + (notes ? ' | Directives: ' + notes : '');
@@ -4571,29 +4631,76 @@ document.addEventListener('DOMContentLoaded', function() {
         details: detailsStr,
         extra: {
           ref: ref,
-          page_link: page,
+          page_name: page,
           objective: objective,
           notes: notes,
-          plan_key: planKey
+          plan_key: planKey,
+          plan_title: plan.title,
+          plan_price: plan.price
         }
       })
     })
     .finally(() => {
-      document.getElementById('elite-sponsoring-form-wrapper').style.display = 'none';
+      const formWrapper = document.getElementById('elite-sponsoring-form-wrapper');
+      if (formWrapper) formWrapper.style.display = 'none';
+
       const successBlock = document.getElementById('elite-sponsoring-success');
-      successBlock.style.display = 'block';
+      if (successBlock) successBlock.style.display = 'block';
 
-      document.getElementById('spons-success-lead-name').textContent = name;
-      document.getElementById('spons-success-plan-title').textContent = plan.title;
-      document.getElementById('spons-success-ref').textContent = ref;
+      const leadNameEl = document.getElementById('spons-success-lead-name');
+      if (leadNameEl) leadNameEl.textContent = name;
 
-      const waText = "Bonjour ELITE SERVICE, je viens de passer commande pour la campagne Sponsoring !%0A%0A*Réf :* " + ref + "%0A*Formule :* " + encodeURIComponent(plan.title) + "%0A*Page :* " + encodeURIComponent(page) + "%0A*Client :* " + encodeURIComponent(name) + " (" + encodeURIComponent(whatsapp) + ")%0A*Objectif :* " + encodeURIComponent(objective) + "%0A%0AMerci de m'indiquer la procédure pour le lancement.";
-      document.getElementById('spons-success-wa-btn').href = "https://wa.me/213555000000?text=" + waText;
+      const pageNameEl = document.getElementById('spons-success-page-name');
+      if (pageNameEl) pageNameEl.textContent = page;
+
+      const planTitleEl = document.getElementById('spons-success-plan-title');
+      if (planTitleEl) planTitleEl.textContent = plan.title;
+
+      const refEl = document.getElementById('spons-success-ref');
+      if (refEl) refEl.textContent = ref;
+
+      const waMsg = encodeURIComponent(
+        'Bonjour ELITE SERVICE, je viens de passer commande pour une campagne Sponsoring !\n\n' +
+        '• Réf Commande : ' + ref + '\n' +
+        '• Formule : ' + plan.title + ' (' + plan.price + ')\n' +
+        '• Nom de la Page : ' + page + '\n' +
+        '• Responsable : ' + name + ' (' + whatsapp + ')\n' +
+        '• Objectif : ' + objective + '\n\n' +
+        'Pouvez-vous me confirmer le lancement de la campagne ? Merci !'
+      );
+      const waBtn = document.getElementById('spons-success-wa-btn');
+      if (waBtn) {
+        waBtn.href = 'https://wa.me/213555000000?text=' + waMsg;
+      }
     });
   };
 
   window.openEliteSponsoringModal = openSponsoringModal;
   window.closeEliteSponsoringModal = closeSponsoringModal;
+  window.eliteSelectPlan = openSponsoringModal;
+
+  // Auto-bind click events on all Sponsoring cards and buttons
+  function bindSponsoringCards() {
+    const cardLinks = document.querySelectorAll('#sponsoring [data-plan-key], #sponsoring .product-card, #sponsoring .product-card__btn, #sponsoring .button');
+    cardLinks.forEach(el => {
+      const parentCard = el.closest('[data-plan-key]') || el;
+      const key = parentCard.getAttribute('data-plan-key');
+      if (key) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openSponsoringModal(key);
+        }, true);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindSponsoringCards);
+  } else {
+    bindSponsoringCards();
+  }
 })();
 </script>
 
